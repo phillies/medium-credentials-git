@@ -11,6 +11,8 @@ import os
 # Super basic webserver that reads the contents of credentials.key and displays it
 # Technically just here so we don't have an empty repo, but still a valid solution
 class MyServer(BaseHTTPRequestHandler):
+    page_template = "<html><body><h1>{text}</h1></body></html>"
+
     def do_GET(self) -> None:
         self.send_response(200)
         self.send_header("Content-type", "text/html")
@@ -18,11 +20,11 @@ class MyServer(BaseHTTPRequestHandler):
         if os.path.exists("credentials.key"):
             with open("credentials.key", "r") as f:
                 self.wfile.write(
-                    f"<html><body><h1>{f.read()}</h1></body></html>".encode()
+                    self.page_template.format(text=f.read()).encode("utf-8")
                 )
         else:
             self.wfile.write(
-                b"<html><body><h1>credentials.key does not exist</h1></body></html>"
+                self.page_template.format(text="No credentials found").encode("utf-8")
             )
 
 
